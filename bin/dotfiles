@@ -1,0 +1,39 @@
+#!/bin/bash
+set -e
+
+# Paths
+DOTFILES_DIR=$HOME/.dotfiles
+SSH_DIR="$HOME/.ssh"
+
+# Update Package databases
+sudo pacman -Sy --noconfirm
+
+# Install Ansible
+if ! [ -x "$(command -v ansible)" ]; then
+ sudo pacman -S ansible --noconfirm
+fi
+
+# Install Git
+if ! [ -x "$(command -v git)" ]; then
+  sudo pacman -S git --noconfirm
+fi
+
+#Generate SSH keys
+if ! [[ -f "$SSH_DIR/id_rsa" ]]; then
+  mkdir -p "$SSH_DIR"
+
+  chmod 700 "$SSH_DIR"
+
+  ssh-keygen -b 4096 -t rsa -f "$SSH_DIR/id_rsa" -N "" -C "$USER@$HOSTNAME"
+
+ cat "$SSH_DIR/id_rsa.pub" >> "$SSH_DIR/authorized_keys"
+ 
+ chmod 600 "$SSH_DIR/authorized_keys"
+fi
+
+# Update Galaxy
+if [[ -f "$DOTFILES_DIR/requirements.yml" ]]; then
+  ansible-galaxy install -r requirements.yml
+fi
+
+ansible-playbook --diff "$DOTFILES_DIR/main.yml"
