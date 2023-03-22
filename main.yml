@@ -1,0 +1,13 @@
+---
+- name: Install dependencies for my dev environment 
+  hosts: localhost
+  connection: local
+  tasks:
+   - name: Ping my hosts
+     ansible.builtin.ping:
+   - name: Print message
+     ansible.builtin.debug:
+       msg: Hello world
+
+  roles:
+    - discord
