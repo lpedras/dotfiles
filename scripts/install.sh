@@ -20,7 +20,7 @@ fi
 
 # Clone dotfiles git repository
 if ! [[ -d "$DOTFILES_DIR/.git" ]]; then
-  git clone git@github.com:lpedras/dotfiles-manjaro.git $DOTFILES_DIR
+  git clone git@github.com:lpedras/dotfiles.git $DOTFILES_DIR
 fi
 
 # Execute dotfiles
