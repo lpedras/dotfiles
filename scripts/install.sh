@@ -20,7 +20,9 @@ fi
 
 # Clone dotfiles git repository
 if ! [[ -d "$DOTFILES_DIR/.git" ]]; then
-  git clone git@github.com:lpedras/dotfiles.git $DOTFILES_DIR
+  git clone https://github.com/lpedras/dotfiles.git $DOTFILES_DIR
+
+  git -C $DOTFILES_DIR remote set-url origin git@github.com:lpedras/dotfiles.git
 fi
 
 # Execute dotfiles
