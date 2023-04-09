@@ -4,13 +4,21 @@ set -e
 DOTFILES_DIR=$HOME/.dotfiles
 
 # Check for apt package manager 
-if [ "$(command -v apt)" ]; then
-  INSTALL_COMMAND="apt install"
+if [ -x "$(command -v apt)" ]; then
+ INSTALL_COMMAND="apt install"
+ echo "using package manager -> apt"
 fi
 
 # Check for pacman package manager
-if [ "$(command -v pacman)" ]; then
+if [ -x "$(command -v pacman)" ]; then
   INSTALL_COMMAND="pacman -S --noconfirm" 
+  echo "using package manager -> pacman" 
+fi
+
+# Check for detected package manager
+if ! [ "$INSTALL_COMMAND" ]; then
+  echo "Package manager not found"
+  exit
 fi
 
 # Install Git
@@ -21,10 +29,7 @@ fi
 # Clone dotfiles git repository
 if ! [[ -d "$DOTFILES_DIR/.git" ]]; then
   git clone https://github.com/lpedras/dotfiles.git $DOTFILES_DIR
-
-  git -C $DOTFILES_DIR remote set-url origin git@github.com:lpedras/dotfiles.git
 fi
 
 # Execute dotfiles
 $DOTFILES_DIR/bin/dotfiles
-

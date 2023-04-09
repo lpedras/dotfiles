@@ -5,14 +5,27 @@ set -e
 DOTFILES_DIR=$HOME/.dotfiles
 SSH_DIR="$HOME/.ssh"
 
-# Install Ansible
-if ! [ -x "$(command -v ansible)" ]; then
- sudo pacman -S ansible --noconfirm
+# Check for apt package manager
+if [ -x "$(command -v apt)" ]; then
+ INSTALL_COMMAND="apt install"
+ echo "using package manager -> apt"
 fi
 
-# Install Git
-if ! [ -x "$(command -v git)" ]; then
-  sudo pacman -S git --noconfirm
+# Check for pacman package manager
+if [ -x "$(command -v pacman)" ]; then
+  INSTALL_COMMAND="pacman -S --noconfirm"
+  echo "using package manager -> pacman"
+fi
+
+# Check for detected package manager
+if ! [ "$INSTALL_COMMAND" ]; then
+  echo "Package manager not found"
+  exit
+fi
+
+# Install Ansible
+if ! [ -x "$(command -v ansible)" ]; then
+ sudo $INSTALL_COMMAND ansible
 fi
 
 #Generate SSH keys
@@ -33,6 +46,6 @@ if [[ -f "$DOTFILES_DIR/requirements.yml" ]]; then
   ansible-galaxy install -r requirements.yml
 fi
 
-ansible-playbook "$DOTFILES_DIR/main.yml" --list-tasks
+ansible-playbook "$DOTFILES_DIR/main.yaml" --list-tasks
 
-ansible-playbook --diff "$DOTFILES_DIR/main.yml" --ask-become-pass
+ansible-playbook --diff "$DOTFILES_DIR/main.yaml" --ask-become-pass
